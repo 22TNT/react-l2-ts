@@ -23,7 +23,6 @@ function RangeCounter({initialCount, initialIncrement}: RangeCounterTypes) {
         <input type="range"
                min={1}
                max={10}
-               defaultValue={initialIncrement}
                value={increment}
                onChange={(e) => setIncrement(parseInt(e.target.value))}/>
         <br/>
@@ -64,7 +63,6 @@ function RangeTimer({initialTime, initialIncrement}: RangeTimerTypes) {
                min={1}
                max={10}
                id={"range"}
-               defaultValue={initialIncrement}
                value={increment}
                onChange={(e) =>
                {
@@ -94,6 +92,42 @@ function CountdownTimer({initialTime}: CountdownTimerTypes) {
     return <>{time}</>
 }
 
+// TODO: fix the generator triggering in pairs
+function PrimeNumbers(){
+    const [output, setOutput] = useState("");
+
+    function IsPrime(number: number){
+        const sqrt = Math.sqrt(number);
+        for (let i = 2; i<=sqrt; i++){
+            if (number % i === 0){
+                return false;
+            }
+        }
+        return true;
+    }
+    function* PrimeGenerator(){
+        let number = 2;
+        while (true){
+            if (IsPrime(number)){
+                yield number;
+                console.log(number)
+            }
+            number++;
+        }
+    }
+
+    const primeGenerator = PrimeGenerator();
+    useEffect(() => {
+        setInterval(() => {
+            let next = primeGenerator.next().value;
+            setOutput(output => output + (next + ", ") ?? (0 + ", "));
+        }, 1000);
+    }, []);
+
+    return <>{output.toString()}</>
+
+}
+
 function App() {
     return (
         <div className="App">
@@ -102,6 +136,8 @@ function App() {
             <RangeTimer initialTime={0} initialIncrement={1}/>
             <br/><br/>
             <CountdownTimer initialTime={10}/>
+            <br/><br/>
+            <PrimeNumbers/>
         </div>
     );
 }
